@@ -1,0 +1,8 @@
+include *.txt *.ini *.cfg *.rst
+recursive-include pyramid_html_minifier *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml
+recursive-include pyramid_html_minifier *.py
+include *.rst
+include *.sh
+include *.txt
+include .coveragerc
+include development.ini
