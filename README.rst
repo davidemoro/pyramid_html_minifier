@@ -12,8 +12,8 @@ pyramid_html_minifier
 ``pyramid_html_minifier`` introduces *safe* html minification
 with *no overhead* for ``Pylons/Pyramid`` applications powered by:
 
-* ``Chameleon`` templates (``ZPT`` based template implementation). Chameleon
-  templates are still valid XML, so they can be safely minified with not
+* ``Chameleon`` templates (``ZPT`` based template implementation). ``Chameleon``
+  templates are still valid ``XML``, so they can be safely minified with not
   too aggressive minification options
 
 * ``Yeoman`` workflow integration and related tools (gulp/grunt, npm, etc)
