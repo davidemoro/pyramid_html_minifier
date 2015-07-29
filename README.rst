@@ -16,29 +16,25 @@ with *no overhead* for ``Pylons/Pyramid`` applications powered by:
   templates are still valid ``XML``, so they can be safely minified with not
   too aggressive minification options
 
-* ``Yeoman`` workflow integration and related tools (gulp/grunt, npm, etc)
-
-``pyramid_html_minifier`` is not meant to be used as a standalone
-Pylons/Pyramid package and it's up to you creating your own ``Yeoman`` setup.
-Here you can find a project using ``pyramid_html_minifier``:
-
-* https://github.com/Kotti/kotti_frontend
-
 What you get with pyramid_html_minifier
 ---------------------------------------
 
-* save precious kilobytes (~50-80% depending on your templates).
+* **bandwith and performance.** Save precious kilobytes (~50-80% depending on your templates).
   It is quite important for bandwith usage and improved performance,
   even more important if you have to manage a big and fat
   ``Pylons/Pyramid`` based website with a lot of traffic.
   See https://www.npmjs.com/package/html-minifier
 
-* no overhead, the minification is based on a build step (a sort of
-  gulp/grunt based collectstatic)
+* **no overhead.** The minification is based on a build step (a sort of
+  gulp/grunt based collectstatic). So no minification on the fly
 
-* safe templaet/html minification. This pattern has been adopted on production
-  websites with no issues after 1 year. So I dare say it is a safe pattern
-  after a 1-year quarantine
+* **safe template/html minification**. It works even with ``macros``
+  and ``slots``.
+  This pattern has been adopted on production websites with no issues
+  after 1 year. So I dare say it is a safe pattern after a
+  1-year quarantine without any sort of problems. You should only
+  remember to disable too aggressive minification options (see next
+  sections)
 
 What pyramid_html_minifier does
 -------------------------------
@@ -53,27 +49,80 @@ What ``pyramid_html_minifier`` introduces:
 
 This way you can start developing static mock applications (even
 heavily Javascript based) using the ``Yeoman`` workflow and use your
-modified html files as ``Chameleon`` templates:
+modified html files enriched by macros and slots as ``Chameleon``
+templates.
 
 How to use pyramid_html_minifier
 --------------------------------
 
-* first of all create a new Yeoman project in your Pyramid templates dir (eg: ``webapp``).
-  It's up to you creating choosing the right Yeoman scaffolding or starting from
-  scratch
+Here you can see how to enable Chameleon templates minification in your
+``Pylons/Pyramid`` web application:
 
-* remove too aggressive html minification options (tested with ``html-minifier`` and its friend
-  ``gulp-html-minifier`` with ``keepClosingSlash`` enabled)
+* put your ``Chameleon`` template file in ``templates/app/master.html`` and its
+  minified version in ``templates/dist/master.html`` (the ``.html`` extension is
+  important). Obviously don't do minification by hand, add ``Yeoman`` in your
+  development workflow with its related tools for automation.
+  This package does not provide any ``gulp`` or ``grunt`` configuration,
+  you are supposed to create your own setup
 
-* if you want you can add ZPT/Chameleon macros and slots to your base ``index.html`` template
+* register a normal ``Pylons/Pyramid`` callable view with
+  ``renderer="your_plugin:templates/{0}/master.html"``. The ``{0}`` is only
+  a placeholder that ``pyramid_html_minifier`` will fill depending on your
+  settings. See next step
 
-* add on your ``.ini`` file ``pyramid_html_minifier.placeholder = app`` or ``dist`` depending on
-  if you want to run in development or production mode (will be used minificated templates in such
-  case)
+* tell ``pyramid_html_minifier`` if you want to pick up standard templates or
+  minified ones adding the ``pyramid_html_minifier.placeholder`` setting to your
+  ``.ini`` file. Typical value for development is ``app`` (the default one),
+  while ``dist`` is usually used for prodcution environments.
+  Example: ``pyramid_html_minifier.placeholder = dist``
 
-* register your callable views with ``renderer="your_package:templates/webapp/{0}/webapp/index.html"``.
-  The ``.html`` renderer provided by ``pyramid_html_minifier`` will automatically
-  pick up the right template depending on your ``.ini`` file settings.
+* add ``pyramid_html_minifier`` to your pyramid.includes setting
+
+The final .ini file should looks like the following one::
+
+    pyramid.includes =
+        ...
+        pyramid_html_minifier
+    
+    ...
+    
+    pyramid_html_minifier.placeholder = dist
+
+Safe minification options
+-------------------------
+
+I suggest to automate the build process integrating the ``Yeoman`` workflow into your
+``Pylons/Pyramid`` project for the best developing experience.
+
+I suggest to use the ``html-minifier`` minificator and its friend ``gulp-html-minifier``
+disabling too aggressive html minification options.
+
+In particular be sure that the ``keepClosingSlash`` option is enabled and
+``removeAttributeQuotes`` is disabled.
+
+Here you can see a real example working configuration::
+
+    const htmlMinifierOptions = {
+      collapseBooleanAttributes: true,
+      collapseWhitespace: true,
+      removeComments: true,
+      removeCommentsFromCDATA: true,
+      removeEmptyAttributes: true,
+      removeRedundantAttributes: true,
+      useShortDoctype: true,
+      keepClosingSlash: true,
+      }
+    
+    ...
+    
+    gulp.task('html', ['styles'], () => {
+      const assets = $.useref.assets({searchPath: ['.tmp', 'app', '.']});
+    
+      return gulp.src('app/*.html')
+        ..
+        .pipe($.if('*.html', $.htmlMinifier(htmlMinifierOptions)))
+        ...
+        .pipe(gulp.dest('dist'));
 
 Why Yeoman
 ----------
@@ -89,7 +138,11 @@ Why ``Yeoman``:
 Links
 -----
 
-More details about projects and case studies using this pattern:
+Here you can find a project using ``pyramid_html_minifier``:
+
+* https://github.com/Kotti/kotti_frontend
+
+More details about case studies using the same pattern:
 
 * http://davidemoro.blogspot.it/2014/09/plone-angularjs-yeoman-starter.html
 
