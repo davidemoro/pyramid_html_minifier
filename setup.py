@@ -21,7 +21,7 @@ tests_require = [
     ]
 
 setup(name='pyramid_html_minifier',
-      version='0.1.dev0',
+      version='0.1',
       description='pyramid_html_minifier',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
