@@ -138,10 +138,6 @@ Why ``Yeoman``:
 Links
 -----
 
-Here you can find a project using ``pyramid_html_minifier``:
-
-* https://github.com/Kotti/kotti_frontend
-
 More details about case studies using the same pattern:
 
 * http://davidemoro.blogspot.it/2014/09/plone-angularjs-yeoman-starter.html
